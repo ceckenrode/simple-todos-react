@@ -11,7 +11,7 @@ App = React.createClass({
   //Loads items from the Tasks collection and puts them on this.data.tasks
   getMeteorData() {
     return {
-      tasks: Tasks.find({}).fetch()
+      tasks: Tasks.find({}, {sort: {createdAt: -1}}).fetch()
     }
   }, 
 
@@ -25,14 +25,14 @@ App = React.createClass({
     event.preventDefault();
 
     //find the text field via the React ref
-    var text = React.findDOMNode(this.refs.textInput).value.trim();
+    var text = ReactDOM.findDOMNode(this.refs.textInput).value.trim();
 
     Tasks.insert({
       text: text,
       createdAt: new Date() // current time
     });
 
-    React.findDOMNode(this.refs.textInput).value = "";
+    ReactDOM.findDOMNode(this.refs.textInput).value = "";
   },
 //when we render we render this html, and then call
 //renderTasks which takes the array of objects and returns
