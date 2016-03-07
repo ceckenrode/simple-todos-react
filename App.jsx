@@ -4,18 +4,35 @@
 //each value to a single Task component which has a 
 //key of key and a task prop of the task object
 App = React.createClass({
-  getTasks() {
-    return [
-    { _id: 1, text: 'This is task 1' },
-    { _id: 2, text: 'This is task 2' },
-    { _id: 3, text: 'This is task 3' }
-    ];
-  },
+
+  //this mixin makes the getMeteorData method work
+  mixins: [ReactMeteorData],
+
+  //Loads items from the Tasks collection and puts them on this.data.tasks
+  getMeteorData() {
+    return {
+      tasks: Tasks.find({}).fetch()
+    }
+  }, 
 
   renderTasks() {
-    return this.getTasks().map((task) => {
+    return this.data.tasks.map((task) => {
       return <Task key={task._id} task={task} />;
     });
+  },
+
+  handleSubmit(event) {
+    event.preventDefault();
+
+    //find the text field via the React ref
+    var text = React.findDOMNode(this.refs.textInput).value.trim();
+
+    Tasks.insert({
+      text: text,
+      createdAt: new Date() // current time
+    });
+
+    React.findDOMNode(this.refs.textInput).value = "";
   },
 //when we render we render this html, and then call
 //renderTasks which takes the array of objects and returns
@@ -25,6 +42,10 @@ App = React.createClass({
       <div className='container'>
         <header>
           <h1>Todo List</h1>
+
+          <form className="new-task" onSubmit={this.handleSubmit} >
+            <input type="text" ref="textInput" placeholder="Type to add new tasks" />
+          </form>
         </header>
 
         <ul>
